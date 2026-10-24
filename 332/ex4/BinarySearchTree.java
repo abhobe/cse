@@ -48,16 +48,42 @@ public class BinarySearchTree<K extends Comparable<K>, V> implements OrderedDele
     // Returns null if the given key is greater than or equal to the largest
     // key present
     public K findNextKey(K key) {
-        // TODO
-        return null;
+        return findNextKey(key, null, root);
+    }
+
+    public K findNextKey(K key, K max, TreeNode<K, V> curr) {
+        if (curr == null) {
+            return max;
+        }
+        int currMinusNew = curr.key.compareTo(key);
+        if (currMinusNew <= 0) {
+            // curr is smaller or equal so key must be to the right.
+            return findNextKey(key, max, curr.right);
+        } else {
+            // curr is larger so it could be the next key
+            return findNextKey(key, curr.key, curr.left);
+        }
     }
 
     // Returns the largest key which is less than the given key
     // Returns null if the given key is less than or equal to the smallest
     // key present
     public K findPrevKey(K key) {
-        // TODO
-        return null;
+        return findPrevKey(key, null, root);
+    }
+
+    public K findPrevKey(K key, K min, TreeNode<K, V> curr) {
+        if (curr == null) {
+            return min;
+        }
+        int currMinusNew = curr.key.compareTo(key);
+        if (currMinusNew >= 0) {
+            // curr is larger or equal so key must be to the left.
+            return findPrevKey(key, min, curr.left);
+        } else {
+            // curr is smaller so it could be the prev key
+            return findPrevKey(key, curr.key, curr.right);
+        }
     }
 
     public V insert(K key, V value) {

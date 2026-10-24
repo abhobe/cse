@@ -5,12 +5,16 @@ public class AVLTree<K extends Comparable<K>, V> extends BinarySearchTree<K, V> 
     }
 
     public V insert(K key, V value) {
-        V answer = find(key, root);
+        V answer = find(key);
         if (answer == null) {
             size++;
         }
         root = insert(key, value, root);
         root.updateHeight();
+        System.out.println("=========");
+        System.out.println("After inserting " + key + " with value " + value + ", the tree looks like this:");
+        printSideways();
+        System.out.println("=========");
         return answer;
     }
 
@@ -27,17 +31,34 @@ public class AVLTree<K extends Comparable<K>, V> extends BinarySearchTree<K, V> 
             curr.left = insert(key, value, curr.left);
         }
         curr.updateHeight();
-
-
+        curr = rebalance(curr, key);
 
         return curr;
     }
 
 
-    public void rebalance(TreeNode<K, V> root) {
-        int balanceFactor = root.left.key.compareTo(root.right.key);
 
-        if (balanceFactor >= 2)
+    public TreeNode<K, V> rebalance(TreeNode<K, V> root, K newKey) {
+        int leftHeight = root.left == null ? -1 : root.left.height;
+        int rightHeight = root.right == null ? -1 : root.right.height;
+        int diff = leftHeight - rightHeight;
+       
+        if (diff == 2) {
+
+            if (newKey.compareTo(root.left.key) > 0)
+                root.left = rotateLeft(root.left);    
+            root = rotateRight(root);
+            
+
+        } else if (diff == -2) {
+
+            // right > left
+            if (newKey.compareTo(root.right.key) < 0)
+                root.right = rotateRight(root.right);    
+            root = rotateLeft(root);
+        }
+
+        return root;
     }
 
 
@@ -55,7 +76,7 @@ public class AVLTree<K extends Comparable<K>, V> extends BinarySearchTree<K, V> 
     private TreeNode<K,V> rotateRight(TreeNode<K, V> top) {
         TreeNode<K, V> newTop = top.left;
         top.left = newTop.right;
-        newTop.left = top;
+        newTop.right = top;
 
         top.updateHeight();
         newTop.updateHeight();
