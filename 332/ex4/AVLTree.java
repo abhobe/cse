@@ -11,10 +11,6 @@ public class AVLTree<K extends Comparable<K>, V> extends BinarySearchTree<K, V> 
         }
         root = insert(key, value, root);
         root.updateHeight();
-        System.out.println("=========");
-        System.out.println("After inserting " + key + " with value " + value + ", the tree looks like this:");
-        printSideways();
-        System.out.println("=========");
         return answer;
     }
 

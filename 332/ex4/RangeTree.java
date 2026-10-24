@@ -64,7 +64,23 @@ public class RangeTree {
     // The data structure will only hold non-conflicting ranges.
     // The running time of this method should be O(log n)
     public boolean hasConflict(Range query) {
-        // TODO
+        if (isEmpty()) {
+            return false;
+        }
+
+
+
+        Range next = byEnd.find(byEnd.findNextKey(query.start));
+        Range prev = byStart.find(byStart.findPrevKey(query.end));
+
+        if (next != null && next.start < query.end) {
+            return true;
+        }
+
+        if (prev != null && prev.end > query.start) {
+            return true;
+        }
+
         return false;
     }
 
@@ -74,7 +90,13 @@ public class RangeTree {
     // added to the data structure.
     // Running time should be O(log n)
     public boolean insert(Range query) {
-        // TODO
-        return false;
+        if (hasConflict(query)) {
+            return  false;
+        }
+
+        byStart.insert(query.start, query);
+        byEnd.insert(query.end, query);
+        size++;
+        return true;
     }
 }

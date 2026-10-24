@@ -22,6 +22,9 @@ public class BinarySearchTree<K extends Comparable<K>, V> implements OrderedDele
     }
 
     public V find(K key) {
+        if (key == null) {
+            return null;
+        }
         if (root == null) {
             return null;
         }
