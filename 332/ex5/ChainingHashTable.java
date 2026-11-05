@@ -17,7 +17,32 @@ public class ChainingHashTable<K, V> implements DeletelessDictionary<K, V> {
     }
 
     private void rehash() {
-        // TODO
+        int newSize = -1;
+        for (int i = 0; i < primes.length; i++ ) {
+            if (primes[i] > table.length) {
+                newSize = primes[i];
+                break;
+            }
+        }
+
+        if (newSize == -1) {
+            newSize = (int)Math.pow(2, Math.ceil(Math.log(table.length) / Math.log(2)) + 1) + 1;
+        }
+
+
+        List<Item<K, V>>[] oldTable = table;
+        table = (LinkedList<Item<K, V>>[]) Array.newInstance(LinkedList.class, newSize);
+        for (int i = 0; i < table.length; i++) {
+            table[i] = new LinkedList<>();
+        }
+        size = 0;
+
+        for (int i = 0; i < oldTable.length; i++) {
+            List<Item<K, V>> list = oldTable[i];
+            for (Item<K, V> item : list) {
+                insert(item.key, item.value);
+            }
+        }
     }
 
     public boolean isEmpty() {
@@ -28,20 +53,48 @@ public class ChainingHashTable<K, V> implements DeletelessDictionary<K, V> {
         return size;
     }
 
+    public double load() {
+        return size/table.length;
+    }
+
+    public int getIndex(K key) {
+        return (key.hashCode() % table.length + table.length) % table.length;
+    }
+
     public V insert(K key, V value) {
-        // TODO
+        if (load() >= 2) {
+            rehash();
+        }
+
+        int index = getIndex(key);
+        List<Item<K, V>> list = table[index];
+
+        
+        for (Item<K, V> item : list) {
+            if (key.equals(item.key)) {
+                int i = list.indexOf(item);
+                list.set(i, new Item<K, V>(key, value));
+                return item.value;
+            }
+        }
+        table[index].add(new Item<K, V>(key, value));
+        size++;
+        return null;
     }
 
     public V find(K key) {
-        // TODO
+        int index = getIndex(key);
+        List<Item<K, V>> list = table[index];
+        for (Item<K, V> item : list) {
+            if (key.equals(item.key)) {
+                return item.value;
+            }
+        }
+        return null;
     }
 
     public boolean contains(K key) {
-        if (find(key) != null) {
-            return true;
-        }
-
-        return false;
+        return find(key) != null;
     }
 
     public List<K> getKeys() {

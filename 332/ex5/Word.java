@@ -77,9 +77,12 @@ public class Word<T> {
         return true;
     }
 
-    //TODO
     public int hashCode() {
-        return -1;
+        int sum = 0;
+        for (int i = 0; i < slice.length; i++) {
+            sum += slice[i].hashCode() * i;
+        }
+        return sum;
     }
 
     public String toString() {
