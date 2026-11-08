@@ -1,3 +1,4 @@
+
 import java.util.*;
 
 public class DonorGraph {
@@ -48,25 +49,61 @@ public class DonorGraph {
     }
 
 
+
+    public List<Match> findCycle(int first, int recipient, boolean[] markedDone, boolean[] markedVisited) {
+        markedVisited[recipient] = true;
+        boolean cycleFound = false;
+
+        List<Match> ret = new LinkedList<>();
+
+        for (Match match : adjList.get(recipient)) {
+            if (markedVisited[match.recipient] && !markedDone[match.recipient]) {
+                if (match.recipient == first) {
+                    cycleFound = true;
+                    ret.add(match);
+                    break;
+                }
+            } else if (!markedVisited[match.recipient] && !cycleFound) {
+                ret = findCycle(first, match.recipient, markedDone, markedVisited);
+                if (ret.size() > 0) {
+                    cycleFound = true;
+                    ret.add(0, match);
+                    break;
+                }
+            }
+        }
+        markedDone[recipient] = true;
+        return ret;
+    }
+
     // returns a chain of matches to make a donor cycle
     // which includes the given recipient.
     // Returns an empty list if no cycle exists.
     public List<Match> findCycle(int recipient) {
-        
-        
-        return new ArrayList<>();
+        boolean[] markedDone = new boolean[adjList.size()];
+        for (int i = 0; i < markedDone.length; i++) {
+            markedDone[i] = false;
+        }
+        boolean[] markedVisited = new boolean[adjList.size()];
+        for (int i = 0; i < markedVisited.length; i++) {
+            markedVisited[i] = false;
+        }
+
+        return findCycle(recipient, recipient, markedDone, markedVisited);
     }
 
 
-    private boolean hasCycle(int recipient, boolean[] markedDone, boolean[] markedVisited) {
+    private boolean hasCycle(int first, int recipient, boolean[] markedDone, boolean[] markedVisited) {
         markedVisited[recipient] = true;
         boolean cycleFound = false;
 
-        for (Match m :  adjList.get(recipient)) {
-            if (markedVisited[m.recipient] && !markedDone[m.recipient]) {
-                cycleFound = true;
-            } else if (!markedVisited[m.recipient] && !cycleFound) {
-                cycleFound = hasCycle(recipient);
+        for (Match match : adjList.get(recipient)) {
+            if (markedVisited[match.recipient] && !markedDone[match.recipient]) {
+                if (match.recipient == first) {
+                    cycleFound = true;
+                }
+            } else if (!markedVisited[match.recipient] && !cycleFound) {
+                cycleFound = hasCycle(first, match.recipient, markedDone, markedVisited);
             }
         }
         markedDone[recipient] = true;
@@ -77,8 +114,15 @@ public class DonorGraph {
     // is some cycle which includes the given recipient.
     public boolean hasCycle(int recipient) {
         boolean[] markedDone = new boolean[adjList.size()];
+        for (int i = 0; i < markedDone.length; i++) {
+            markedDone[i] = false;
+        }
         boolean[] markedVisited = new boolean[adjList.size()];
+        for (int i = 0; i < markedVisited.length; i++) {
+            markedVisited[i] = false;
+        }
 
-        return hasCycle(recipient, markedDone, markedVisited);
+        return hasCycle(recipient, recipient, markedDone, markedVisited);
     }
 }
+
