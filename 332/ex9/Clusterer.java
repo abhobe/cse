@@ -1,5 +1,10 @@
 import java.util.*;
 
+
+
+
+
+
 public class Clusterer {
     private List<List<WeightedEdge<Integer, Double>>> adjList; // the adjacency list of the original graph
     private List<List<WeightedEdge<Integer, Double>>> mstAdjList; // the adjacency list of the minimum spanning tree
@@ -7,13 +12,64 @@ public class Clusterer {
     private double cost; // the distance between the closest pair of clusters
 
     public Clusterer(double[][] distances, int k) {
-        // TODO
+        adjList = new ArrayList<>();
+        for (int i = 0; i < distances.length; i++) {
+            adjList.add(new LinkedList<>());
+            for (int j = 0; j < distances[i].length; j++) {
+                if (i != j) {
+                    adjList.get(i).add(new WeightedEdge<>(i, j, distances[i][j]));
+                }
+            }
+        }
+    }
+
+    public class Node {
+        int id;
+        Double weight = Double.POSITIVE_INFINITY;
+        WeightedEdge prevEdge = null;
+        boolean done = false;
+        boolean seen = false;
     }
 
     // implement Prim's algorithm to find a MST of the graph.
     // in my implementation I used the mstAdjList field to store this.
     private void prims(int start) {
-        //TODO
+        boolean[] done = new boolean[adjList.size()];
+        boolean[] seen = new boolean[adjList.size()];
+        PriorityQueue<Node> pq = new PriorityQueue<>((a, b) -> (int)(a.weight - b.weight));
+
+        Node[] nodes = new Node[adjList.size()];
+
+        for (int i = 0; i < nodes.length; i++) {
+            nodes[i] = new Node();
+            nodes[i].id = i;
+        }
+        seen[start] = true;
+        
+        while (!pq.isEmpty()) {
+            Node curr = pq.remove();
+            if (curr.done) continue;
+            curr.done = true;
+            if (curr.id != start) {
+                mstAdjList.get(curr.id).add(curr.prevEdge);
+            }
+
+            for (WeightedEdge<Integer, Double> v : adjList.get(curr.id)) {
+                Double d = v.weight;
+                if (!nodes[v.destination].seen) {
+                    nodes[v.destination].seen = true;
+                    nodes[v.destination].weight = d;
+                    pq.add(nodes[v.destination]);
+                }
+
+                if (!nodes[v.destination].done && d < nodes[v.destination].weight) {
+                    nodes[v.destination].weight = d;
+                    pq.add(nodes[v.destination]);
+                }
+                
+            }
+        }
+        
     }
 
 
