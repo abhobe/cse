@@ -2,7 +2,7 @@ import java.io.File;
 import java.util.Scanner;
 
 public class Client {
-    public static String testFileName = "35clusters35points.txt";
+    public static String testFileName = "specExample.txt";
 
     public static void main(String[] args) throws Exception {
         try (Scanner s = new Scanner(new File(testFileName))) {
@@ -24,7 +24,7 @@ public class Client {
         // Try adjusting k and see how it affects the clusters.
         // Uncomment below to plot
         // Plot.plotClusters("1kpoints.csv", 5);
-        // Plot.plotClusters("smiley.csv", 4);
+        Plot.plotClusters("smiley.csv", 4);
         // Plot.plotClusters("moons.csv", 2);
     }
 }
